@@ -1,0 +1,17 @@
+{
+    "name": "kanxphp/kanx-web-scan-api",
+    "description": "A high-performance micro-app kit built with KanxPHP",
+    "autoload": {
+        "psr-4": {
+            "KanxPHP\\Controllers\\": "src/Controllers/",
+            "KanxPHP\\Core\\": "src/Core/"
+        }
+    },
+    "require": {
+        "php": ">=8.1",
+        "kanxphp/core": "dev-main"
+    },
+    "scripts": {
+        "kanx": "php vendor/kanxphp/core/kanx-cli"
+    }
+}

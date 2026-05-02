@@ -1,0 +1,138 @@
+#!/usr/bin/env php
+<?php
+
+// Smart Autoload Finder: Searches for vendor/autoload.php in local or parent directories
+$autoloadPaths = [
+    __DIR__ . '/vendor/autoload.php',           // Local dev
+    __DIR__ . '/../../autoload.php',            // Inside vendor/bin (standard)
+    __DIR__ . '/../../../vendor/autoload.php',  // Deeper nested
+];
+
+$found = false;
+foreach ($autoloadPaths as $path) {
+    if (file_exists($path)) {
+        require_once $path;
+        $found = true;
+        break;
+    }
+}
+
+if (!$found) {
+    die("❌ Error: Could not find vendor/autoload.php. Please run 'composer install'.\n");
+}
+
+use KanxPHP\Core\SafeJSON;
+
+/**
+ * Kanx-CLI: The RAD Scaffolding Tool for KanxPHP
+ */
+
+$command = $argv[1] ?? 'help';
+$name = $argv[2] ?? null;
+
+switch ($command) {
+    case 'make:controller':
+        if (!$name) {
+            echo "Usage: php kanx-cli make:controller {Name}\n";
+            exit(1);
+        }
+        createController($name);
+        break;
+
+    case 'build:kit':
+        if (!$name) {
+            echo "Usage: php kanx-cli build:kit {niche}\n";
+            exit(1);
+        }
+        buildKit($name);
+        break;
+
+    case 'help':
+    default:
+        echo "KanxPHP CLI v1.0.0\n";
+        echo "Available commands:\n";
+        echo "  make:controller {Name}  - Generate a new API controller\n";
+        echo "  build:kit {niche}       - Scaffold a new niche API bundle\n";
+        break;
+}
+
+function createController($name) {
+    $dir = getcwd() . "/src/Controllers";
+    if (!is_dir($dir)) mkdir($dir, 0755, true);
+
+    $path = "{$dir}/{$name}Controller.php";
+    if (file_exists($path)) {
+        echo "Error: Controller already exists.\n";
+        return;
+    }
+
+    $template = "<?php\n\nnamespace KanxPHP\Controllers;\n\nuse KanxPHP\Core\SafeJSON;\n\nclass {$name}Controller {\n\n    public function handle(\$input) {\n        // Your RAD logic here\n        return SafeJSON::success(['tool' => '{$name}', 'status' => 'ready']);\n    }\n}\n";
+    
+    file_put_contents($path, $template);
+    echo "✅ Successfully created: src/Controllers/{$name}Controller.php\n";
+}
+
+function buildKit($kitName) {
+    echo "🚀 Building Kit: {$kitName}...\n";
+
+    // 1. Create the Directory
+    if (is_dir($kitName)) {
+        echo "❌ Error: Directory '{$kitName}' already exists.\n";
+        return;
+    }
+    mkdir($kitName, 0755);
+
+    // 2. Scaffold Folder Structure
+    $folders = [
+        "{$kitName}/src/Controllers",
+        "{$kitName}/src/Core",
+        "{$kitName}/public",
+        "{$kitName}/tests"
+    ];
+
+    foreach ($folders as $folder) {
+        mkdir($folder, 0755, true);
+        echo "  - Created {$folder}\n";
+    }
+
+    // 3. Create a clean index.php entry point
+    $indexTemplate = "<?php\n\nrequire_once __DIR__ . '/../vendor/autoload.php';\n\n// Basic RAD Router\necho 'Welcome to {$kitName} API';\n";
+    file_put_contents("{$kitName}/public/index.php", $indexTemplate);
+
+    // 4. Create the Kit's composer.json
+    $composerData = [
+        "name" => "kanxphp/{$kitName}",
+        "description" => "A high-performance micro-app kit built with KanxPHP",
+        "autoload" => [
+            "psr-4" => [
+                "KanxPHP\\Controllers\\" => "src/Controllers/",
+                "KanxPHP\\Core\\" => "src/Core/"
+            ]
+        ],
+        "require" => [
+            "php" => ">=8.1",
+            "kanxphp/core" => "dev-main" // This links back to your shared core
+        ],
+        "scripts" => [
+            "kanx" => "php vendor/kanxphp/core/kanx-cli"
+        ]
+    ];
+
+    file_put_contents(
+        "{$kitName}/composer.json", 
+        json_encode($composerData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+    );
+
+    $file = __DIR__ . "/./kanx-cli";
+    $newfile = "{$kitName}/kanx";
+
+    if (!copy($file, $newfile)) {
+        echo "failed to copy $file...\n";
+    }
+
+    shell_exec("cd {$kitName} && git init");
+
+    shell_exec("cd {$kitName} && composer install");
+
+    echo "✅ Kit '{$kitName}' is built. \n👉 Next steps: \n   cd {$kitName}\n";
+}
