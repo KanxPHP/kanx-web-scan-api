@@ -1,0 +1,33 @@
+# Kanx Web-Scan API: Terms of Service & Usage Policy
+
+## 1. Acceptance of Terms
+
+By subscribing to or using the Kanx Web-Scan API ("the Service"), you agree to be bound by these terms. If you are using the Service on behalf of an organisation, you agree to these terms for that organisation.
+
+## 2. Lawful Use OnlyYou agree to use the Service only for lawful purposes. You are strictly prohibited from using the Service to:Perform unauthorized security research or "DDoS" preparation.
+
+Engage in illegal "scraping" or data harvesting in violation of a target site’s robots.txt or Terms of Service.Harass, threaten, or cause disruption to any third-party infrastructure.
+
+## 3. Rate Limits & Fair UseTo maintain high performance for all users, we enforce strict rate limits based on your subscription tier.
+
+Attempts to bypass rate limits via multiple accounts or IP rotation are grounds for immediate termination without refund. 
+
+The SafeCache system is enabled by default to prevent redundant stress on target servers.4. Disclaimer of Liability (Scanning Risks)
+
+Kanx Web-Scan API acts as a passive/active diagnostic proxy.
+
+Target Blocking: We are not responsible if a target website blocks your IP or our scanning IP as a result of your requests.
+
+Accuracy: While we strive for 99.9% accuracy, data (especially WHOIS and Geolocation) is provided by third-party registries. 
+
+We provide this data "as-is" without warranty.
+
+Infrastructure Stress: You assume all risk when scanning sensitive or legacy infrastructure. We are not liable for any downtime caused to a target site by our standard scanning handshakes.
+
+## 5. Intellectual PropertyThe API logic, the KanxPHP Core, and the Trust Score algorithm are the exclusive property of Kanx. You may not reverse-engineer, "clone," or resell the raw API data as a competing service without a separate Commercial Enterprise License.
+
+## 6. Privacy & DataWe do not store the "content" of your scans, but we do log the Target URL/IP and Requesting API Key for security auditing and to prevent abuse of our SafeCurl perimeter.
+
+## 7. Termination
+
+We reserve the right to suspend or terminate access to any user found to be using the service for malicious intent or in a way that risks our server's reputation (e.g., getting our IP blacklisted by major CDNs).
