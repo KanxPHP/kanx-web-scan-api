@@ -25,7 +25,7 @@ try {
 	$tool = SafeInput::get('tool', 'health');
 
     // 3. Determine which tool to run (via URL param or JSON body)
-    $tool = SafeInput::get('tool');//$_GET['tool'] ?? $input['tool'] ?? 'health';
+    $tool = SafeInput::get('tool');
 
     // 4. The RAD Routing Engine
     $response = match ($tool) {
