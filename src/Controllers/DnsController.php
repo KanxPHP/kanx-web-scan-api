@@ -3,7 +3,6 @@
 namespace KanxPHP\Controllers;
 
 use KanxPHP\Core\SafeJSON;
-use KanxPHP\Core\SafeInput;
 
 class DnsController 
 {
@@ -11,14 +10,12 @@ class DnsController
     public function handle($input) 
     {
         $domain = $input['domain'] ?? null;
-        $typeInput = strtoupper(SafeInput::get('type') ?? 'ANY');
+        $typeInput = strtoupper($input['type'] ?? 'ANY');
 
-        // 1. Validation
         if (!$domain || !filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
             return SafeJSON::error("A valid 'domain' is required.");
         }
 
-        // Map user input to PHP DNS constants
         $typeMap = [
             'A'     => DNS_A,
             'AAAA'  => DNS_AAAA,
@@ -30,26 +27,33 @@ class DnsController
         ];
 
         $dnsType = $typeMap[$typeInput] ?? DNS_ANY;
+        $records = @dns_get_record($domain, $dnsType);
 
-        // 2. Core Logic
-        try {
-            // Using @ to suppress warnings for non-existent domains
-            $records = @dns_get_record($domain, $dnsType);
-
-            if ($records === false || empty($records)) {
-                return SafeJSON::error("No DNS records found for {$domain}.", [], 404);
+        // --- RAD PRODUCTION FALLBACK FOR DIGITALOCEAN ---
+        // If ANY fails or returns empty, perform a targeted look-up array
+        if (($records === false || empty($records)) && $typeInput === 'ANY') {
+            $records = [];
+            $fallbackTypes = [DNS_A, DNS_AAAA, DNS_MX, DNS_TXT, DNS_NS];
+            
+            foreach ($fallbackTypes as $fallbackType) {
+                $subRecords = @dns_get_record($domain, $fallbackType);
+                if (is_array($subRecords)) {
+                    $records = array_merge($records, $subRecords);
+                }
             }
-
-            return SafeJSON::success([
-                'domain' => $domain,
-                'queried_type' => $typeInput,
-                'count' => count($records),
-                'records' => $records
-            ]);
-
-        } catch (\Exception $e) {
-            return SafeJSON::error("Internal DNS resolution error: " . $e->getMessage());
         }
-    }
+        // ------------------------------------------------
 
+        if (empty($records)) {
+            return SafeJSON::error("No DNS records found for {$domain}.", [], 404);
+        }
+
+        return SafeJSON::success([
+            'domain' => $domain,
+            'queried_type' => $typeInput,
+            'count' => count($records),
+            'records' => $records
+        ]);
+    }
 }
+
