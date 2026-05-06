@@ -11,7 +11,7 @@ class TrustScoreController
 
     public function handle($input) 
     {
-        $domain = SafeInput::get('domain') ?? null;
+        $domain = $input['domain'] ?? null;
         if (!$domain) return SafeJSON::error("Domain required.");
 
         // 1. Check Cache first (High-speed RAD strategy)

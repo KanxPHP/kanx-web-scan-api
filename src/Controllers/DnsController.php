@@ -10,7 +10,7 @@ class DnsController
 
     public function handle($input) 
     {
-        $domain = $input['url'] ?? SafeInput::get('domain') ?? null;
+        $domain = $input['url'] ?? null;
         $typeInput = strtoupper(SafeInput::get('type') ?? 'ANY');
 
         // 1. Validation

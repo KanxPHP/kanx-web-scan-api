@@ -10,7 +10,7 @@ class SslCheckController
 
     public function handle($input) 
     {
-        $host = $input['host'] ?? SafeInput::get('host') ?? null;
+        $host = $input['host'] ?? null;
         
         if (!$host || !filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
             return SafeJSON::error("A valid 'host' (e.g., example.com) is required.");

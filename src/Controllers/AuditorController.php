@@ -11,7 +11,7 @@ class AuditorController
 
     public function handle($input)    
     {
-        $url = $input['url'] ?? SafeInput::get('url');
+        $url = $input['url'] ?? null;
 
         // 1. Securely fetch headers using SafeCurl (prevents SSRF)
         

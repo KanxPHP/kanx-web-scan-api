@@ -10,7 +10,7 @@ class GeolocationController {
 
     public function handle($input) 
     {
-        $target = $input['url'] ?? $input['domain'] ?? SafeInput::get('ip') ?? SafeInput::get('domain') ?? null;
+        $target = $input['url'] ?? $input['domain'] ?? null;
 
         if (!$target) {
             return SafeJSON::error("IP or Domain is required.");

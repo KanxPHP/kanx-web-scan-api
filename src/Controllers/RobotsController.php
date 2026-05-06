@@ -11,7 +11,7 @@ class RobotsController
 
     public function handle($input) 
     {
-        $url = $input['url'] ?? SafeInput::get('url') ?? null;
+        $url = $input['url'] ?? null;
 
         if (!$url || !filter_var($url, FILTER_VALIDATE_URL)) {
             return SafeJSON::error("A valid base URL is required.");

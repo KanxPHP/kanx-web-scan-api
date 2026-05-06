@@ -10,7 +10,7 @@ class WhoisController {
 
     public function handle($input) 
     {
-        $domain = $input['domain'] ?? SafeInput::get('domain') ?? null;
+        $domain = $input['domain'] ?? null;
         
         if (!$domain || !filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
             return SafeJSON::error("Valid domain required.");
