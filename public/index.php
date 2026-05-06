@@ -33,9 +33,9 @@ try {
         'ssl'    => (new SslCheckController())->handle($input),
         'robots' => (new RobotsController())->handle($input),
         'dns'    => (new DnsController())->handle($input),
-        'whois'    => (new WhoisController())->handle($input),
+        'whois'  => (new WhoisController())->handle($input),
         'geo'    => (new GeolocationController())->handle($input),
-        'trust'    => (new TrustScoreController())->handle($input),
+        'trust'  => (new TrustScoreController())->handle($input),
         'health' => SafeJSON::success(['status' => 'online', 'kit' => 'web-scan-v1']),
         default  => SafeJSON::error("Unknown tool requested. Options: audit, ssl, robots, dns.", [], 404)
     };
